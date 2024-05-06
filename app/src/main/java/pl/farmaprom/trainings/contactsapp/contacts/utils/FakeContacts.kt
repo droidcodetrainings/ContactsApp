@@ -8,8 +8,10 @@ fun generateFakeContactsList(count: Int) = mutableListOf<Contact>().apply {
     }
 }
 
-private fun generateFakeContact(id: Long) = Contact(
+fun generateFakeContact(id: Long) = Contact(
     id = id,
     name = "name $id",
+    additionalInfo = "additional",
+    email = "abcd@fgh.pl",
     imageUrl = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/%20%20kamper.jpg"
 )
