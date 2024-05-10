@@ -1,5 +1,6 @@
 package pl.farmaprom.trainings.contactsapp.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,11 +28,15 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.Dimens
 fun ContactItem(
     imageUrl: String?,
     name: String,
-    isFavourite: Boolean
+    isFavourite: Boolean,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp

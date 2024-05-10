@@ -11,9 +11,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsList
 import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsListViewModel
+import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsListViewState
+import pl.farmaprom.trainings.contactsapp.preview.presentation.ContactPreviewScreen
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,25 +29,45 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewState = viewModel.viewState
             ContactsAppTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                Text(text = "")
-                            },
-                            colors = TopAppBarDefaults.smallTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    }
-                ) {
+
+                if (viewState.selectedContact != null) {
+                    ContactPreviewScreen(contact = viewState.selectedContact)
+                } else {
                     ContactsList(
-                        viewState = viewState,
-                        paddingValues = it
+                        viewModel = viewModel,
+                        viewState = viewState
                     )
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ContactsList(
+    viewModel: ContactsListViewModel,
+    viewState: ContactsListViewState
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "")
+                },
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    ) {
+        ContactsList(
+            viewState = viewState,
+            paddingValues = it,
+            onContactClick = { contact ->
+                viewModel.selectContact(contact)
+            }
+        )
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateFakeContactsList
 import pl.farmaprom.trainings.contactsapp.ui.ContactItem
 import pl.farmaprom.trainings.contactsapp.ui.HeaderItem
@@ -16,7 +17,8 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 @Composable
 fun ContactsList(
     viewState: ContactsListViewState,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    onContactClick: (Contact) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.padding(paddingValues)
@@ -29,7 +31,10 @@ fun ContactsList(
             ContactItem(
                 imageUrl = it.imageUrl,
                 name = it.name,
-                isFavourite = it.isFavourite
+                isFavourite = it.isFavourite,
+                onClick = {
+                    onContactClick(it)
+                }
             )
         }
     }
