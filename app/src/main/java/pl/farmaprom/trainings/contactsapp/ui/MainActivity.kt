@@ -13,6 +13,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsList
 import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsListViewModel
 import pl.farmaprom.trainings.contactsapp.list.presentation.ContactsListViewState
@@ -29,17 +34,49 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewState = viewModel.viewState
             ContactsAppTheme {
+                val navController = rememberNavController()
 
-                if (viewState.selectedContact != null) {
-                    ContactPreviewScreen(contact = viewState.selectedContact)
-                } else {
-                    ContactsList(
-                        viewModel = viewModel,
-                        viewState = viewState
-                    )
+                NavHost(navController = navController, startDestination = "list") {
+                    composable(route = "list") {
+                        ContactsList(
+                            viewModel = viewModel,
+                            viewState = viewState,
+                            navController = navController
+                        )
+                    }
+                    composable(route = "preview") {
+                        viewState.selectedContact?.let {
+                            ContactPreviewScreen(
+                                contact = viewState.selectedContact,
+                                onNavigateUp = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        } ?: throw IllegalStateException("selected contact not filled")
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun KotlinNavigation(
+    viewModel: ContactsListViewModel,
+    viewState: ContactsListViewState
+) {
+    if (viewState.selectedContact != null) {
+        ContactPreviewScreen(
+            contact = viewState.selectedContact,
+            onNavigateUp = {
+                viewModel.unselectContact()
+            }
+        )
+    } else {
+//        ContactsList(
+//            viewModel = viewModel,
+//            viewState = viewState
+//        )
     }
 }
 
@@ -47,7 +84,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContactsList(
     viewModel: ContactsListViewModel,
-    viewState: ContactsListViewState
+    viewState: ContactsListViewState,
+    navController: NavController
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -67,6 +105,7 @@ fun ContactsList(
             paddingValues = it,
             onContactClick = { contact ->
                 viewModel.selectContact(contact)
+                navController.navigate(route = "preview")
             }
         )
     }

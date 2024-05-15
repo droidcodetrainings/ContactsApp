@@ -124,7 +124,10 @@ fun ContactDetailItemPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContactPreviewScreen(contact: Contact) {
+fun ContactPreviewScreen(
+    contact: Contact,
+    onNavigateUp: () -> Unit = {}
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -135,7 +138,9 @@ fun ContactPreviewScreen(contact: Contact) {
                     containerColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = {
+                        onNavigateUp()
+                    }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = ""
