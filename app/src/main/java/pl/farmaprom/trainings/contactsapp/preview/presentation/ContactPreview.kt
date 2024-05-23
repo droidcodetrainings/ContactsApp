@@ -1,5 +1,9 @@
 package pl.farmaprom.trainings.contactsapp.preview.presentation
 
+import android.Manifest
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,13 +26,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import pl.farmaprom.trainings.contactsapp.R
@@ -36,7 +48,8 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @Composable
 fun ContactBaseInfoView(
-    contact: Contact
+    contact: Contact,
+    onContactClick: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -54,6 +67,15 @@ fun ContactBaseInfoView(
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.outline
         )
+        Button(onClick = {
+            onContactClick(contact.email) //temporary, should be contact.phoneNumber
+        }) {
+            Icon(
+                imageVector = Icons.Default.Call,
+                contentDescription = null,
+                tint = Color.White
+            )
+        }
     }
 }
 
@@ -122,12 +144,38 @@ fun ContactDetailItemPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ContactPreviewScreen(
     contact: Contact,
-    onNavigateUp: () -> Unit = {}
+    onNavigateUp: () -> Unit = {},
+    onContactClick: (String) -> Unit = {}
 ) {
+    val permissionState = rememberPermissionState(
+        permission = Manifest.permission.CALL_PHONE
+    )
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.d("TAG", "Permission granted after request")
+        } else {
+            Log.d("TAG", "permission denied")
+        }
+    }
+
+    LaunchedEffect(permissionState) {
+        if (permissionState.status.isGranted.not()
+            && permissionState.status.shouldShowRationale) {
+            Log.d("TAG", "show rationale")
+        } else if (permissionState.status.isGranted.not()) {
+            requestPermissionLauncher.launch(Manifest.permission.CALL_PHONE)
+        } else {
+            Log.d("TAG", "permission granted before")
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -160,7 +208,8 @@ fun ContactPreviewScreen(
     ) {
         ContactPreviewList(
             modifier = Modifier.padding(it),
-            contact = contact
+            contact = contact,
+            onContactClick = onContactClick
         )
     }
 }
@@ -168,7 +217,8 @@ fun ContactPreviewScreen(
 @Composable
 fun ContactPreviewList(
     modifier: Modifier = Modifier,
-    contact: Contact
+    contact: Contact,
+    onContactClick: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier
@@ -176,7 +226,10 @@ fun ContactPreviewList(
             .padding(vertical = 16.dp)
     ) {
         item {
-            ContactBaseInfoView(contact = contact)
+            ContactBaseInfoView(
+                contact = contact,
+                onContactClick = onContactClick
+            )
         }
         item {
             ContactDetailItem(
