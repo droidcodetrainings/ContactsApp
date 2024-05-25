@@ -17,11 +17,6 @@ class MainViewViewModel(
     var viewState by mutableStateOf(ContactsListViewState())
 
     init {
-//        viewModelScope.launch {
-//            withContext(Dispatchers.IO) {
-//                repository.getData()
-//            }
-//        }
         val data = mutableListOf<Contact>()
         for (i in 1..1_000_000) {
             data.add(sampleData[i % 2])
@@ -31,13 +26,21 @@ class MainViewViewModel(
         )
     }
 
-//    interface Repository {
-//
-//        suspend fun getData(): List<Contact>
-//    }
+    fun selectContact(contact: Contact) {
+        viewState = viewState.copy(
+            selectedContact = contact
+        )
+    }
+
+    fun unSelectContact() {
+        viewState = viewState.copy(
+            selectedContact = null
+        )
+    }
 }
 
 data class ContactsListViewState(
     val recentContacts: List<Contact> = emptyList(),
-    val contacts: List<Contact> = emptyList()
+    val contacts: List<Contact> = emptyList(),
+    val selectedContact: Contact? = null
 )
