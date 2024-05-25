@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import pl.farmaprom.trainings.contactsapp.ContactsListViewState
 import pl.farmaprom.trainings.contactsapp.MainViewModel
+import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,47 +35,73 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewState = viewModel.viewState
             ContactsAppTheme {
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        MediumTopAppBar(
-                            title = {},
-                            colors = TopAppBarDefaults.mediumTopAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        )
-                    }
-                ) {
-                    LazyColumn(
-                        modifier = Modifier.padding(it)
-                    ) {
-                        item {
-                            HeaderItem(text = "Kontakty")
+                if (viewState.selectedContact != null) {
+                    PreviewScreen(
+                        contact = viewState.selectedContact,
+                        onNavigateUp = {
+                            viewModel.unselectContact()
                         }
-
-                        items(viewState.contactsList) {
-                            ContactItem(
-                                imageUrl = it.profileImageUrl,
-                                name = "${it.name} ${it.surname}",
-                                isFavourite = it.isFavourite
-                            )
+                    )
+                } else {
+                    ContactsListScreen(
+                        viewState = viewState,
+                        onContactClick = {
+                            viewModel.selectContact(it)
                         }
-                    }
+                    )
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun ContactsListScreen(
+    viewState: ContactsListViewState,
+    onContactClick: (Contact) -> Unit
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            MediumTopAppBar(
+                title = {},
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier.padding(it)
+        ) {
+            item {
+                HeaderItem(text = "Kontakty")
+            }
+
+            items(viewState.contactsList) {
+                ContactItem(
+                    imageUrl = it.profileImageUrl,
+                    name = "${it.name} ${it.surname}",
+                    isFavourite = it.isFavourite,
+                    onClick = {
+                        onContactClick(it)
+                    }
+                )
+            }
+        }
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    ContactsAppTheme {
-        Greeting("Android sssshshshsh")
-    }
+fun PreviewScreen(
+    contact: Contact,
+    onNavigateUp: () -> Unit
+) {
+    Text(
+        modifier = Modifier.clickable {
+            onNavigateUp.invoke()
+        },
+        text = contact.name
+    )
 }

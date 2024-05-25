@@ -21,9 +21,22 @@ class MainViewModel : ViewModel() {
             contactsList = data
         )
     }
+
+    fun selectContact(contact: Contact) {
+        viewState = viewState.copy(
+            selectedContact = contact
+        )
+    }
+
+    fun unselectContact() {
+        viewState = viewState.copy(
+            selectedContact = null
+        )
+    }
 }
 
 data class ContactsListViewState(
     val recentContacts: List<Contact> = emptyList(),
-    val contactsList: List<Contact> = emptyList()
+    val contactsList: List<Contact> = emptyList(),
+    val selectedContact: Contact? = null
 )
