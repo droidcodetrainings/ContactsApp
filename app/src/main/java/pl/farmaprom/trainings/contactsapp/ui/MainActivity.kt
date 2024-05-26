@@ -1,8 +1,12 @@
 package pl.farmaprom.trainings.contactsapp.ui
 
+import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,18 +17,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import pl.farmaprom.trainings.contactsapp.ContactListViewState
 import pl.farmaprom.trainings.contactsapp.MainViewModel
 import pl.farmaprom.trainings.contactsapp.R
@@ -54,7 +68,9 @@ class MainActivity : ComponentActivity() {
                             viewState = viewState,
                             onContactClick = {
                                 viewModel.selectContact(it)
-                                navController.navigate(route = "preview")
+                                navController.navigate(
+                                    route = "preview"
+                                )
                             }
                         )
                     }
@@ -65,9 +81,20 @@ class MainActivity : ComponentActivity() {
                                 contact = viewState.selectedContact,
                                 onNavigateUp = {
                                     navController.navigateUp()
+                                },
+                                onNextClick = {
+                                    navController.navigate(route = "next")
                                 }
                             )
                         } ?: throw IllegalStateException("no selected contact filled")
+                    }
+
+                    composable(route = "next") {
+                        NextScreen(
+                            onNavigateUp = {
+                                navController.navigateUp()
+                            }
+                        )
                     }
                 }
 
@@ -142,15 +169,59 @@ fun DefaultPreview() {
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ContactPreviewScreen(
     contact: Contact,
+    onNavigateUp: () -> Unit,
+    onNextClick: () -> Unit
+) {
+    val permissionState = rememberPermissionState(
+        permission = Manifest.permission.CALL_PHONE
+    )
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                Log.i("TAG", "just granted")
+            } else {
+                Log.i("TAG", "denied clicked")
+            }
+        }
+    )
+
+    LaunchedEffect(permissionState) {
+        when {
+            permissionState.status.isGranted.not() && permissionState.status.shouldShowRationale -> {
+                Log.i("TAG", "show rationale")
+            }
+            permissionState.status.isGranted -> Log.i("TAG", "granted before")
+            else -> permissionLauncher.launch(Manifest.permission.CALL_PHONE)
+        }
+    }
+
+    Column {
+        Text(
+            modifier = Modifier.clickable {
+                onNavigateUp()
+            },
+            text = contact.name
+        )
+        Button(onClick = { onNextClick() }) {
+            Text(text = "next")
+        }
+    }
+}
+
+@Composable
+fun NextScreen(
     onNavigateUp: () -> Unit
 ) {
-    Text(
-        modifier = Modifier.clickable {
-            onNavigateUp()
-        },
-        text = contact.name
-    )
+    IconButton(onClick = { onNavigateUp() }) {
+        Icon(
+            imageVector = Icons.Default.ArrowBack,
+            contentDescription = null
+        )
+    }
 }
