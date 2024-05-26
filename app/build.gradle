@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'pl.farmaprom.trainings.contactsapp'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "pl.farmaprom.trainings.contactsapp"
         minSdk 29
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -66,4 +66,9 @@ dependencies {
 
     implementation "com.github.skydoves:landscapist-glide:2.1.0"
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
+    def nav_version = "2.7.7"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+
+    implementation 'com.google.accompanist:accompanist-permissions:0.34.0'
 }
