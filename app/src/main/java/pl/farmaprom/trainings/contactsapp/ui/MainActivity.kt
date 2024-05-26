@@ -22,11 +22,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import pl.farmaprom.trainings.contactsapp.ContactListViewState
 import pl.farmaprom.trainings.contactsapp.MainViewModel
 import pl.farmaprom.trainings.contactsapp.R
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
+import java.lang.IllegalStateException
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
@@ -38,21 +42,50 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewState = viewModel.viewState
             ContactsAppTheme {
-                if (viewState.selectedContact != null) {
-                    ContactPreviewScreen(
-                        contact = viewState.selectedContact,
-                        onNavigateUp = {
-                            viewModel.unselectContact()
-                        }
-                    )
-                } else {
-                    ContactsListScreen(
-                        viewState = viewState,
-                        onContactClick = {
-                            viewModel.selectContact(it)
-                        }
-                    )
+
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = "list"
+                ) {
+                    composable(route = "list") {
+                        ContactsListScreen(
+                            viewState = viewState,
+                            onContactClick = {
+                                viewModel.selectContact(it)
+                                navController.navigate(route = "preview")
+                            }
+                        )
+                    }
+
+                    composable(route = "preview") {
+                        viewState.selectedContact?.let {
+                            ContactPreviewScreen(
+                                contact = viewState.selectedContact,
+                                onNavigateUp = {
+                                    navController.navigateUp()
+                                }
+                            )
+                        } ?: throw IllegalStateException("no selected contact filled")
+                    }
                 }
+
+//                if (viewState.selectedContact != null) {
+//                    ContactPreviewScreen(
+//                        contact = viewState.selectedContact,
+//                        onNavigateUp = {
+//                            viewModel.unselectContact()
+//                        }
+//                    )
+//                } else {
+//                    ContactsListScreen(
+//                        viewState = viewState,
+//                        onContactClick = {
+//                            viewModel.selectContact(it)
+//                        }
+//                    )
+//                }
             }
         }
     }
