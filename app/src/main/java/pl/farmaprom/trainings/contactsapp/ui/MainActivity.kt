@@ -20,12 +20,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import pl.farmaprom.trainings.contactsapp.ContactsListViewState
 import pl.farmaprom.trainings.contactsapp.MainViewViewModel
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewViewModel by viewModels()
@@ -35,16 +38,42 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewState = viewModel.viewState
             ContactsAppTheme {
-                if (viewState.selectedContact != null) {
-                    ContactPreviewScreen(
-                        contact = viewState.selectedContact,
-                        navigateUp = {
-                            viewModel.unSelectContact()
-                        }
-                    )
-                } else {
-                    ContactsListScreen(viewState = viewState, viewModel = viewModel)
+
+                val navController = rememberNavController()
+
+                NavHost(navController = navController, startDestination = "list") {
+                    composable(route = "list") {
+                        ContactsListScreen(
+                            viewState = viewState,
+                            viewModel = viewModel,
+                            onContactClick = { contact ->
+                                // viewModel.selectContact(contact) // TODO remove comment after remove call from inner fun
+                                navController.navigate("preview")
+                            }
+                        )
+                    }
+                    composable(route = "preview") {
+                        viewState.selectedContact?.let {
+                            ContactPreviewScreen(
+                                contact = it,
+                                navigateUp = {
+                                    viewModel.unSelectContact()
+                                }
+                            )
+                        } ?: throw IllegalStateException("selected contact not filled")
+                    }
                 }
+
+//                if (viewState.selectedContact != null) {
+//                    ContactPreviewScreen(
+//                        contact = viewState.selectedContact,
+//                        navigateUp = {
+//                            viewModel.unSelectContact()
+//                        }
+//                    )
+//                } else {
+//                    ContactsListScreen(viewState = viewState, viewModel = viewModel)
+//                }
             }
         }
     }
@@ -54,7 +83,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContactsListScreen(
     viewState: ContactsListViewState,
-    viewModel: MainViewViewModel
+    viewModel: MainViewViewModel,
+    onContactClick: (Contact) -> Unit = {}
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -80,7 +110,8 @@ fun ContactsListScreen(
                     name = contact.name,
                     isFavourite = contact.isFavourite,
                     onClick = {
-                        viewModel.selectContact(contact)
+                        viewModel.selectContact(contact) // TODO move to outer fun
+                        onContactClick(contact)
                     }
                 )
             }
