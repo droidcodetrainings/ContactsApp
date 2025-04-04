@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.farmaprom.trainings.contactsapp.contacts.SearchBoxTopAppBar
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -28,6 +29,9 @@ class MainActivity : ComponentActivity() {
             ContactsAppTheme {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
+                    topBar = {
+                        SearchBoxTopAppBar()
+                    },
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     Greeting(

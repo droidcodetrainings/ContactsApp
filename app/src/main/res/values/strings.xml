@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ContactsApp</string>
     <string name="header_contacts_list_text">Kontakty</string>
+    <string name="search_clicked_with_text">Search clicked with text %1$s</string>
 </resources>
