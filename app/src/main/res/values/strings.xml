@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ContactsApp</string>
+    <string name="header_contacts_list_text">Kontakty</string>
 </resources>
