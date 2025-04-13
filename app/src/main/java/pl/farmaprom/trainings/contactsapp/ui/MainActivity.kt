@@ -3,13 +3,21 @@ package pl.farmaprom.trainings.contactsapp.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,11 +26,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             ContactsAppTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.surface
-                ) {
-                    Greeting("Android")
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { padding ->
+                    Greeting(
+                        modifier = Modifier.padding(padding),
+                        name = "Android"
+                    )
                 }
             }
         }
@@ -30,14 +40,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun Greeting(
+    modifier: Modifier = Modifier,
+    name: String
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(18.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Hello $name!",
+            style = MaterialTheme.typography.headlineLarge
+        )
+        Text(text = "Having fun?",
+            modifier = modifier
+                .padding(8.dp)
+                .clickable { },
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    device = Devices.PIXEL_7_PRO
+)
 @Composable
 fun DefaultPreview() {
     ContactsAppTheme {
-        Greeting("Android")
+        Greeting(name = "Android")
     }
 }
