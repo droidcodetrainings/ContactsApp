@@ -57,8 +57,9 @@ fun BaseContactView(
             contentDescription = null
         )
         Text(
-            manifier = modifier.padding(16.dp),
-            text = name
+            modifier = modifier.padding(16.dp),
+            text = name,
+            style = MaterialTheme.typography.headlineMedium
         )
     }
 }
