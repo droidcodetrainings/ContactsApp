@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">ContactsApp</string>
     <string name="header_contacts_text">Kontakty</string>
+    <string name="text_key_e_mail">Adres e-mail</string>
+    <string name="text_phone_number">Telefon</string>
 </resources>
