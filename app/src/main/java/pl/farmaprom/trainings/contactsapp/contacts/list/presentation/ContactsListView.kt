@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.farmaprom.trainings.contactsapp.R
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContacts
-import pl.farmaprom.trainings.contactsapp.sampleData
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @Composable
@@ -41,7 +40,7 @@ fun ContactsListView(
 
 @Preview(showBackground = true)
 @Composable
-private fun ContactsListView() {
+private fun ContactsListViewPreview() {
     val contactsViewState by remember { mutableStateOf(ContactsViewState(contacts = generateContacts(100))) }
     ContactsAppTheme {
         ContactsListView(
