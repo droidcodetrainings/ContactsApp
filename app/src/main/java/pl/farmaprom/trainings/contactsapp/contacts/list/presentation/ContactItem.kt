@@ -27,9 +27,10 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @Composable
 fun ContactItem(
-    prfileUrl: String = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/%20%20kamper.jpg",
+    prfileUrl: String? = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/%20%20kamper.jpg",
     isFavourite: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    name: String = "Izabelle Doe"
 ) {
     Row(
         modifier = modifier
@@ -38,8 +39,8 @@ fun ContactItem(
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        BaseContactItem(profileUrl = prfileUrl)
-        if (isFavourite){
+        BaseContactItem(profileUrl = prfileUrl?:"", name = name)
+        if (isFavourite) {
             Icon(
                 imageVector = Icons.Filled.Star,
                 contentDescription = null
@@ -52,7 +53,7 @@ fun ContactItem(
 @Composable
 fun BaseContactItem(
     profileUrl: String,
-    name: String = "Izabelle Doe"
+    name: String
 ) {
     Row(
         modifier = Modifier.padding(8.dp),
