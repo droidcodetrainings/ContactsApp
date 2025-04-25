@@ -19,7 +19,8 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 @Composable
 fun ContactsListView(
     modifier: Modifier = Modifier,
-    contactsViewState: ContactsViewState
+    contactsViewState: ContactsViewState,
+    onContactClick: (Contact) -> Unit = {}
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         item {
@@ -29,11 +30,15 @@ fun ContactsListView(
             ContactItem(
                 profileImageUrl = it.profileImageUrl,
                 name = "${it.name} ${it.surname}",
-                isFavourite = it.isFavourite
+                isFavourite = it.isFavourite,
+                onClick = {
+                    onContactClick(it)
+                }
             )
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -1,5 +1,6 @@
 package pl.farmaprom.trainings.contactsapp.contacts.presentation.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,15 +27,17 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 @Composable
 fun ContactItem(
+    modifier: Modifier = Modifier,
     profileImageUrl: String? = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/face1.png",
     name: String = "Jannet Doe",
     isFavourite: Boolean = false,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable { onClick() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

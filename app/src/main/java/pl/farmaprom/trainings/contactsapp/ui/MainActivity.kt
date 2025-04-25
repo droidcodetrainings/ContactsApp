@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import pl.farmaprom.trainings.contactsapp.contacts.SearchBoxTopAppBar
+import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.MainViewModel
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsListView
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsViewState
@@ -42,7 +43,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     ContactsView(
                         modifier = Modifier.padding(it),
-                        contactsViewState = contactsViewState
+                        contactsViewState = contactsViewState,
+                        viewModel = viewModel
                     )
                 }
             }
@@ -53,7 +55,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContactsView(
     modifier: Modifier = Modifier,
-    contactsViewState: ContactsViewState
+    contactsViewState: ContactsViewState,
+    viewModel: MainViewModel
 ) {
     Column(
         modifier = Modifier
@@ -63,7 +66,10 @@ fun ContactsView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ContactsListView(contactsViewState = contactsViewState)
+        ContactsListView(
+            contactsViewState = contactsViewState,
+            onContactClick = { viewModel.onContactSelected(it) }
+        )
     }
 }
 
@@ -71,9 +77,11 @@ fun ContactsView(
 @Composable
 fun DefaultPreview() {
     ContactsAppTheme {
-        val contactViewState by remember { mutableStateOf(
-            ContactsViewState(contacts = generateContacts(100))
-        ) }
-        ContactsView(contactsViewState = contactViewState)
+        val contactViewState by remember {
+            mutableStateOf(
+                ContactsViewState(contacts = generateContacts(100))
+            )
+        }
+//        ContactsView(contactsViewState = contactViewState)
     }
 }
