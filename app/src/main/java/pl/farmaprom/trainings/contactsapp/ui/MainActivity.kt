@@ -3,7 +3,6 @@ package pl.farmaprom.trainings.contactsapp.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,15 +31,9 @@ class MainActivity : ComponentActivity() {
                 val viewModel = viewModel<MainViewModel>()
                 val contactsViewState by viewModel.contactsViewState.collectAsStateWithLifecycle()
                 // A surface container using the 'background' color from the theme
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {}
-                ) { padding ->
-                    ContactsView(
-                        modifier = Modifier.padding(padding),
-                        contactsViewState = contactsViewState
-                    )
-                }
+                ContactsView(
+                    contactsViewState = contactsViewState
+                )
             }
         }
     }
@@ -51,14 +44,24 @@ fun ContactsView(
     modifier: Modifier = Modifier,
     contactsViewState: ContactsViewState
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        ContactsListView(
-            contactsViewState = contactsViewState
-        )
+    val viewModel = viewModel<MainViewModel>()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {}
+    ) { padding ->
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            ContactsListView(
+                modifier = modifier.padding(padding),
+                contactsViewState = contactsViewState,
+                onContactClick = { contact ->
+                    viewModel.onContactSelected(contact)
+                }
+            )
+        }
     }
 }
 

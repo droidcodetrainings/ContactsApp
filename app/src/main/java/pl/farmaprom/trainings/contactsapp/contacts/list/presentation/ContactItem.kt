@@ -1,6 +1,7 @@
 package pl.farmaprom.trainings.contactsapp.contacts.list.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,12 +31,16 @@ fun ContactItem(
     prfileUrl: String? = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/%20%20kamper.jpg",
     isFavourite: Boolean = false,
     modifier: Modifier = Modifier,
-    name: String = "Izabelle Doe"
+    name: String = "Izabelle Doe",
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            },
         verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -47,7 +52,6 @@ fun ContactItem(
             )
         }
     }
-
 }
 
 @Composable
@@ -63,16 +67,14 @@ fun BaseContactItem(
         GlideImage(
             imageModel = { profileUrl },
             modifier = Modifier
-                .padding(end = 8.dp)
-                .size(36.dp)
+                .size(48.dp)
                 .clip(CircleShape),
-            previewPlaceholder = R.drawable.face1,
+            previewPlaceholder = R.drawable.face1
         )
         Text(
             text = name,
-            modifier = Modifier.padding(end = 8.dp),
-            style = MaterialTheme.typography.bodyLarge
-
+            modifier = Modifier.padding(8.dp),
+            style = MaterialTheme.typography.headlineMedium
         )
     }
 }
