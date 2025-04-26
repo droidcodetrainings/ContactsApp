@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContacts
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     private val _contactsViewState = MutableStateFlow(ContactsViewState(emptyList()))
     val contactsViewState = _contactsViewState.asStateFlow()
 
@@ -16,7 +16,7 @@ class MainViewModel: ViewModel() {
         _contactsViewState.value = ContactsViewState(generateContacts(100))
     }
 
-    fun onContactSelected(contact: Contact){
+    fun onContactSelected(contact: Contact) {
         Log.d("MainViewModel", "onContactSelected: $contact")
         _contactsViewState.value = _contactsViewState.value.copy(selectedContact = contact)
     }
