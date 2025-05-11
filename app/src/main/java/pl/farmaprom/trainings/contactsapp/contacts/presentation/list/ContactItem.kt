@@ -2,62 +2,92 @@ package pl.farmaprom.trainings.contactsapp.contacts.presentation.list
 
 import android.media.Image
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.skydoves.landscapist.glide.GlideImage
 import pl.farmaprom.trainings.contactsapp.R
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 
 
-
 @Composable
 fun ContactItem(
+    prfileUrl: String? = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/%20%20kamper.jpg",
+    isFavourite: Boolean = false,
     modifier: Modifier = Modifier,
-    name: String,
-    isFavorite: Boolean,
+    name: String = "Izabelle Doe",
+    onClick: () -> Unit = {}
 ) {
-
     Row(
         modifier = modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .clickable {
+                onClick()
+            },
+        verticalAlignment = CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Image(
-            modifier = modifier.size(36.dp),
-            painter = painterResource(R.drawable.face),
-            contentDescription = null
-        )
-        Icon(
-            imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.Star,
-            contentDescription = null
-        )
-
+        BaseContactItem(profileUrl = prfileUrl?:"", name = name)
+        if (isFavourite) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null
+            )
+        }
     }
+}
 
-
+@Composable
+fun BaseContactItem(
+    profileUrl: String,
+    name: String
+) {
+    Row(
+        modifier = Modifier.padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        GlideImage(
+            imageModel = { profileUrl },
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape),
+            previewPlaceholder = R.drawable.face
+        )
+        Text(
+            text = name,
+            modifier = Modifier.padding(8.dp),
+            style = MaterialTheme.typography.headlineMedium
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun ContactItemPreview() {
     ContactsAppTheme {
-        ContactItem(name = "Joe Doe", isFavorite = true)
+        ContactItem(isFavourite = true)
     }
 }
