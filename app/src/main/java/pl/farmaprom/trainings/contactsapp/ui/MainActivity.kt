@@ -62,7 +62,11 @@ fun ContactsView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ContactsViewList(contactsViewState = viewState)
+        val viewModel = viewModel<MainViewModel>()
+        ContactsViewList(contactsViewState = viewState,
+            onContactClicked = {
+                viewModel.onContactSelected(it)
+            })
     }
 }
 
