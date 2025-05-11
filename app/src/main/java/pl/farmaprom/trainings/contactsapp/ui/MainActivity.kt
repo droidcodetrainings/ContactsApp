@@ -10,15 +10,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsViewList
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsViewState
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
+import pl.farmaprom.trainings.contactsapp.utils.generateContactsList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +34,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ContactsAppTheme {
+                val viewModel = viewModel<MainViewModel>()
+                val viewState by viewModel.contactsViewState.collectAsStateWithLifecycle()
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { padding ->
-                    Greeting(
+                    ContactsView(
                         modifier = Modifier.padding(padding),
-                        name = "Android"
+                        viewState = viewState
                     )
                 }
             }
@@ -42,9 +51,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(
+fun ContactsView(
     modifier: Modifier = Modifier,
-    name: String
+    viewState: ContactsViewState
 ) {
     Column(
         modifier = modifier
@@ -53,16 +62,7 @@ fun Greeting(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Hello $name!",
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Text(text = "Having fun?",
-            modifier = modifier
-                .padding(8.dp)
-                .clickable { },
-            style = MaterialTheme.typography.headlineMedium
-        )
+        ContactsViewList(contactsViewState = viewState)
     }
 }
 
@@ -72,7 +72,16 @@ fun Greeting(
 )
 @Composable
 fun DefaultPreview() {
+    val contactViewState by remember {
+        mutableStateOf(
+            ContactsViewState(
+                contacts = generateContactsList(
+                    1000
+                )
+            )
+        )
+    }
     ContactsAppTheme {
-        Greeting(name = "Android")
+        ContactsView(viewState = contactViewState)
     }
 }
