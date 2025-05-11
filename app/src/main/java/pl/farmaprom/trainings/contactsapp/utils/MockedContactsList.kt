@@ -1,4 +1,4 @@
-package pl.farmaprom.trainings.contactsapp
+package pl.farmaprom.trainings.contactsapp.utils
 
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import kotlin.random.Random
