@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.farmaprom.trainings.contactsapp.R
+import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.utils.generateContacts
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
@@ -21,7 +22,8 @@ import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 @Composable
 fun ContactsViewList(
     modifier: Modifier = Modifier,
-    viewState: ContactsViewState
+    viewState: ContactsViewState,
+    onContactClick: (Contact) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -35,7 +37,10 @@ fun ContactsViewList(
             ContactItem(
                 profileImageUrl = it.profileImageUrl,
                 name = it.name,
-                isFavourite = it.isFavourite
+                isFavourite = it.isFavourite,
+                onClick = {
+                    onContactClick(it)
+                }
             )
         }
     }
