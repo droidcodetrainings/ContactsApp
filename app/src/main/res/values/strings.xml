@@ -2,4 +2,8 @@
     <string name="app_name">ContactsApp</string>
     <string name="header_contacts_list_text">Kontakty</string>
     <string name="search_clicked_with_text">Search clicked with text %1$s</string>
+    <string name="label_adres_email">Adres email</string>
+    <string name="label_phone_number">Telefon</string>
+    <string name="label_city">Miejscowość</string>
+    <string name="text_city_no_provided">Nie podano</string>
 </resources>
