@@ -4,19 +4,20 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,48 +27,59 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import pl.farmaprom.trainings.contactsapp.R
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
-import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsListView
+import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContactsList
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactItem
 import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsViewState
+import pl.farmaprom.trainings.contactsapp.presentation.list.HeaderItem
 import pl.farmaprom.trainings.contactsapp.presentation.preview.ContactPreviewScreen
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ContactsAppTheme {
-                val viewModel = viewModel<MainViewModel>()
+                val viewModel: MainViewModel = viewModel<MainViewModel>()
                 val contactsViewState by viewModel.contactViewState.collectAsStateWithLifecycle()
+                // A surface container using the 'background' color from the theme
+                val selectedContact = contactsViewState.selectedContact
+//                BackHandler(enabled = selectedContact != null) {
+//                    viewModel.onContactSelected(null)
+//                }
+//                if (selectedContact != null) {
+//                    ContactPreviewScreen(
+//                        contact = selectedContact,
+//                        onBackClick = {
+//                            viewModel.onContactSelected(null)
+//                        }
+//                    )
+//                } else {
+//                    ContactsView(contactsViewState = contactsViewState)
+//                }
 
                 val navController = rememberNavController()
+
                 NavHost(
                     navController = navController,
-                    startDestination = ContactList
+                    startDestination = ContactsList
                 ) {
-                    composable<ContactList> {
-                        Scaffold(
-                            modifier = Modifier.fillMaxSize(),
-                        ) { padding ->
-                            ContactsView(
-                                modifier = Modifier.padding(padding),
-                                viewState = contactsViewState,
-                                onContactClick = { contact ->
-                                    viewModel.onContactSelected(contact)
-                                    navController.navigate(
-                                        ContactPreview(
-                                            id = contact.id
-                                        )
-                                    )
-                                }
-                            )
-                        }
+                    composable<ContactsList> {
+                        ContactsView(
+                            contactsViewState = contactsViewState,
+                            onContactClick = { contact ->
+                                viewModel.onContactSelected(contact)
+                                navController.navigate(ContactPreview(id = contact.id))
+                            }
+                        )
                     }
                     composable<ContactPreview> { navEntry ->
-                        val arg = navEntry.toRoute<ContactPreview>()
-                        Log.d("KRTEST", arg.toString())
+                        val args = navEntry.toRoute<ContactPreview>()
+                        Log.d("KRTEST", "args: $args")
                         ContactPreviewScreen(
-                            contact = contactsViewState.selectedContact!!,
+                            contact = selectedContact!!, // TODO should be based on arg from list
                             onBackClick = {
                                 navController.navigateUp()
                             }
@@ -80,56 +92,71 @@ class MainActivity : ComponentActivity() {
 }
 
 @Serializable
-data object ContactList
+data object ContactsList
 
 @Serializable
-data class ContactPreview(val id: Long)
+data class ContactPreview(
+    val id: Long
+)
 
 @Composable
 fun ContactsView(
-    modifier: Modifier,
-    viewState: ContactsViewState = ContactsViewState(),
-    onContactClick: (Contact) -> Unit = {}
+    modifier: Modifier = Modifier,
+    contactsViewState: ContactsViewState,
+    onContactClick: (Contact) -> Unit = { }
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ContactsListView(
-            contactsViewState = viewState,
-            onContactClick = onContactClick
-        )
+    Scaffold(
+        topBar = { },
+        modifier = Modifier.fillMaxSize(),
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ContactsListView(
+                modifier = modifier.padding(padding),
+                contactsViewState = contactsViewState,
+                onContactClick = onContactClick
+            )
+        }
     }
 }
 
-@Preview(
-    showBackground = true,
-    device = Devices.PIXEL_7_PRO
-)
+@Composable
+fun ContactsListView(
+    modifier: Modifier = Modifier,
+    contactsViewState: ContactsViewState,
+    onContactClick: (Contact) -> Unit = {}
+) {
+    LazyColumn(modifier = modifier.fillMaxSize()) {
+        item {
+            HeaderItem(headerText = stringResource(R.string.header_contacts_list_text))
+        }
+        items(contactsViewState.contacts){
+            ContactItem(
+                prfileUrl = it.profileImageUrl,
+                name = it.name,
+                isFavourite = it.isFavourite,
+                onClick = {
+                    onContactClick(it)
+                }
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ContactsAppTheme {
-        ContactsView(
-            modifier = Modifier,
-        )
+        val contactViewState by remember {
+            mutableStateOf(
+                ContactsViewState(contacts = generateContactsList(20))
+            )
+        }
+        ContactsView(contactsViewState = contactViewState)
     }
 }
-
-//
-//@Preview(
-//    showBackground = true,
-//    device = Devices.NEXUS_5
-//)
-//@Composable
-//fun DefaultPreviewNexus() {
-//    ContactsAppTheme {
-//        Greeting(
-//            modifier = Modifier,
-//            name = "Android"
-//        )
-//    }
-//}
-//
