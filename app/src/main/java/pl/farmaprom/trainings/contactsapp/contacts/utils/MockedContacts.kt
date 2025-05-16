@@ -18,6 +18,7 @@ fun generateContact(i: Long): Contact {
         profileImageUrl = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/face${
             randomNumber
         }.png",
-        isFavourite = randomNumber % 2L == 0L
+        isFavourite = randomNumber % 2L == 0L,
+        phone = (i * 111111111).toString()
     )
 }
