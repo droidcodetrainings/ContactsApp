@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
         _contactsViewState.value = ContactsViewState(generateContacts(100))
     }
 
-    fun onContactSelected(contact: Contact) {
+    fun onContactSelected(contact: Contact?) {
         Log.d("MainViewModel", "onContactSelected: $contact")
         _contactsViewState.value = _contactsViewState.value.copy(selectedContact = contact)
     }

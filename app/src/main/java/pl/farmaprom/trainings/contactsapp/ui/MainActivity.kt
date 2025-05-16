@@ -1,7 +1,9 @@
 package pl.farmaprom.trainings.contactsapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,33 +20,89 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import kotlinx.serialization.Serializable
 import pl.farmaprom.trainings.contactsapp.contacts.SearchBoxTopAppBar
+import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.MainViewModel
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsListView
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsViewState
+import pl.farmaprom.trainings.contactsapp.contacts.preview.ContactPreviewScreen
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContacts
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             ContactsAppTheme {
                 val viewModel: MainViewModel = viewModel<MainViewModel>()
                 val contactsViewState by viewModel.contactsViewState.collectAsStateWithLifecycle()
                 // A surface container using the 'background' color from the theme
-                ContactsView(contactsViewState = contactsViewState)
+                val selectedContact = contactsViewState.selectedContact
+//                BackHandler(enabled = selectedContact != null) {
+//                    viewModel.onContactSelected(null)
+//                }
+//                if (selectedContact != null) {
+//                    ContactPreviewScreen(
+//                        contact = selectedContact,
+//                        onBackClick = {
+//                            viewModel.onContactSelected(null)
+//                        }
+//                    )
+//                } else {
+//                    ContactsView(contactsViewState = contactsViewState)
+//                }
+
+                val navController = rememberNavController()
+
+                NavHost(
+                    navController = navController,
+                    startDestination = ContactsList
+                ) {
+                    composable<ContactsList> {
+                        ContactsView(
+                            contactsViewState = contactsViewState,
+                            onContactClick = { contact ->
+                                viewModel.onContactSelected(contact)
+                                navController.navigate(ContactPreview(id = contact.id))
+                            }
+                        )
+                    }
+                    composable<ContactPreview> { navEntry ->
+                        val args = navEntry.toRoute<ContactPreview>()
+                        Log.d("KRTEST", "args: $args")
+                        ContactPreviewScreen(
+                            contact = selectedContact!!, // TODO should be based on arg from list
+                            onBackClick = {
+                                navController.navigateUp()
+                            }
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+@Serializable
+data object ContactsList
+
+@Serializable
+data class ContactPreview(
+    val id: Long
+)
+
 @Composable
 fun ContactsView(
     modifier: Modifier = Modifier,
     contactsViewState: ContactsViewState,
+    onContactClick: (Contact) -> Unit = { }
 ) {
-    val viewModel: MainViewModel = viewModel<MainViewModel>()
     Scaffold(
         topBar = {
             SearchBoxTopAppBar()
@@ -61,7 +119,7 @@ fun ContactsView(
             ContactsListView(
                 modifier = modifier.padding(padding),
                 contactsViewState = contactsViewState,
-                onContactClick = { viewModel.onContactSelected(it) }
+                onContactClick = onContactClick
             )
         }
     }
