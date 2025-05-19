@@ -17,6 +17,7 @@ fun generateContact(id: Long): Contact {
         id = id,
         name = "Name $id",
         profileImageUrl = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/face${randomNumber}.png",
-        isFavourite = randomNumber % 2 == 0
+        isFavourite = randomNumber % 2 == 0,
+        phone = (id * 123456789).toString()
     )
 }

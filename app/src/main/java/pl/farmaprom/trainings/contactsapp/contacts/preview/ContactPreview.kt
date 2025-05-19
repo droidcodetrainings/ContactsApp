@@ -1,5 +1,9 @@
 package pl.farmaprom.trainings.contactsapp.contacts.preview
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,25 +20,33 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import pl.farmaprom.trainings.contactsapp.R
@@ -42,12 +54,62 @@ import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.sampleData
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ContactPreviewScreen(
     contact: Contact,
-    onBackClick: () -> Unit = {},
-    onCallContactClick: (String) -> Unit = {}
+    onBackClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    
+    // Permission state for call permission
+    val callPermissionState = rememberPermissionState(permission = Manifest.permission.CALL_PHONE)
+    
+    // Track if we need to show the permission rationale dialog
+    var showRationaleDialog by remember { mutableStateOf(false) }
+    
+    // Keep track of the phone number we want to call after permission is granted
+    var phoneNumberToCall by remember { mutableStateOf<String?>(null) }
+    
+    // Permission rationale dialog
+    if (showRationaleDialog) {
+        AlertDialog(
+            onDismissRequest = { showRationaleDialog = false },
+            title = { Text("Permission Required") },
+            text = { Text("Phone call permission is needed to make calls directly from the app.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showRationaleDialog = false
+                    callPermissionState.launchPermissionRequest()
+                }) {
+                    Text("Request Permission")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    showRationaleDialog = false
+                    phoneNumberToCall = null
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+    
+    // Handle permission result for a pending call
+    if (phoneNumberToCall != null && callPermissionState.status.isGranted) {
+        try {
+            val intent = Intent(Intent.ACTION_CALL).apply {
+                data = Uri.parse("tel:$phoneNumberToCall")
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to make call: ${e.message}", Toast.LENGTH_SHORT).show()
+        } finally {
+            phoneNumberToCall = null
+        }
+    }
+
     Scaffold(
         topBar = { ContactDetailAppBar(onBackClick = onBackClick) }
     ) { innerPadding ->
@@ -60,7 +122,34 @@ fun ContactPreviewScreen(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                ContactBaseInfo(contact = contact, onCallContactClick = onCallContactClick)
+                ContactBaseInfo(
+                    contact = contact, 
+                    onCallContactClick = { phoneNumber ->
+                        when {
+                            callPermissionState.status.isGranted -> {
+                                // Permission already granted, make the call
+                                try {
+                                    val intent = Intent(Intent.ACTION_CALL).apply {
+                                        data = Uri.parse("tel:$phoneNumber")
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Failed to make call: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            callPermissionState.status.shouldShowRationale -> {
+                                // Show rationale dialog
+                                phoneNumberToCall = phoneNumber
+                                showRationaleDialog = true
+                            }
+                            else -> {
+                                // First time asking for permission
+                                phoneNumberToCall = phoneNumber
+                                callPermissionState.launchPermissionRequest()
+                            }
+                        }
+                    }
+                )
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
