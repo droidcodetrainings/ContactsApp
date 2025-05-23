@@ -1,4 +1,4 @@
-package pl.farmaprom.trainings.contactsapp.contacts.presentation.list
+package pl.farmaprom.trainings.contactsapp.presentation.list
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

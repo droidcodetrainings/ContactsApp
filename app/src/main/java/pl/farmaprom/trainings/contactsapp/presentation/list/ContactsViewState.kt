@@ -1,4 +1,4 @@
-package pl.farmaprom.trainings.contactsapp.contacts.presentation.list
+package pl.farmaprom.trainings.contactsapp.presentation.list
 
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 

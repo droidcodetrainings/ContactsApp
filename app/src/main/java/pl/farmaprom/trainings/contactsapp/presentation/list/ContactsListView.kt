@@ -1,4 +1,4 @@
-package pl.farmaprom.trainings.contactsapp.contacts.presentation.list
+package pl.farmaprom.trainings.contactsapp.presentation.list
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import pl.farmaprom.trainings.contactsapp.R
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
-import pl.farmaprom.trainings.contactsapp.utils.generateContactsList
+import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContactsList
 
 @Composable
 fun ContactsListView(

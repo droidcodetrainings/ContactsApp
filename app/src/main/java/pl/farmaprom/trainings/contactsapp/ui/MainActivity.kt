@@ -20,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsListView
-import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsViewState
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsListView
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsViewState
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {

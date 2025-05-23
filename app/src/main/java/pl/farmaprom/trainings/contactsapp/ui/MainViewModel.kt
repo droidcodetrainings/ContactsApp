@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
-import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsViewState
-import pl.farmaprom.trainings.contactsapp.utils.generateContactsList
+import pl.farmaprom.trainings.contactsapp.presentation.list.ContactsViewState
+import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContactsList
 
 class MainViewModel : ViewModel() {
 
