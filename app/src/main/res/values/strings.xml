@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ContactsApp</string>
     <string name="header_item_text">Kontakty</string>
+    <string name="label_adres_email">Adres email</string>
+    <string name="label_phone_number">Telefon</string>
+    <string name="label_city">Miejscowość</string>
+    <string name="text_city_no_provided">Nie podano</string>
 </resources>
