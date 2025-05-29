@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
@@ -69,6 +70,12 @@ dependencies {
 
     implementation "com.github.skydoves:landscapist-glide:2.1.0"
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
+    implementation "androidx.navigation:navigation-compose:2.8.9"
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1'
+
+    implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 
     testImplementation 'junit:junit:4.13.2'
 }

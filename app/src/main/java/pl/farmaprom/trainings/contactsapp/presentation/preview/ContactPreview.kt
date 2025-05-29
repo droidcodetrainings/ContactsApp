@@ -1,5 +1,8 @@
 package pl.farmaprom.trainings.contactsapp.presentation.preview
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,12 +19,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +37,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.glide.GlideImage
 import pl.farmaprom.trainings.contactsapp.R
@@ -42,12 +52,19 @@ import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.sampleData
 import pl.farmaprom.trainings.contactsapp.ui.theme.ContactsAppTheme
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ContactPreviewScreen(
     contact: Contact,
-    onBackClick: () -> Unit = {},
-    onCallContactClick: (String) -> Unit = {}
+    onBackClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val callPhonePermissionState = rememberPermissionState(
+        Manifest.permission.CALL_PHONE
+    )
+    
+    val showPermissionRationale = remember { mutableStateOf(false) }
+    
     Scaffold(
         topBar = { ContactDetailAppBar(onBackClick = onBackClick) }
     ) { innerPadding ->
@@ -60,7 +77,28 @@ fun ContactPreviewScreen(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                ContactBaseInfo(contact = contact, onCallContactClick = onCallContactClick)
+                ContactBaseInfo(
+                    contact = contact,
+                    onCallContactClick = { phoneNumber ->
+                        when {
+                            callPhonePermissionState.status.isGranted -> {
+                                // Permission already granted, make phone call
+                                val intent = Intent(Intent.ACTION_CALL).apply {
+                                    data = Uri.parse("tel:1234566")
+                                }
+                                context.startActivity(intent)
+                            }
+                            callPhonePermissionState.status.shouldShowRationale -> {
+                                // Show rationale dialog
+                                showPermissionRationale.value = true
+                            }
+                            else -> {
+                                // Request permission
+                                callPhonePermissionState.launchPermissionRequest()
+                            }
+                        }
+                    }
+                )
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
@@ -82,9 +120,30 @@ fun ContactPreviewScreen(
                 )
             }
         }
+        
+        // Permission Rationale Dialog
+        if (showPermissionRationale.value) {
+            AlertDialog(
+                onDismissRequest = { showPermissionRationale.value = false },
+                title = { Text("Permission Required") },
+                text = { Text("Call phone permission is required to make calls directly from the app.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showPermissionRationale.value = false
+                        callPhonePermissionState.launchPermissionRequest()
+                    }) {
+                        Text("Request Permission")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showPermissionRationale.value = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
-
 
 @Composable
 fun ContactDetailAppBar(
