@@ -1,6 +1,8 @@
 package pl.farmaprom.trainings.contactsapp.ui
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -13,13 +15,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
+import pl.farmaprom.trainings.contactsapp.contacts.data.ContactEntity
+import pl.farmaprom.trainings.contactsapp.contacts.data.ContactsDatabase
 import pl.farmaprom.trainings.contactsapp.contacts.list.presentation.ContactsViewState
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContact
 import pl.farmaprom.trainings.contactsapp.contacts.utils.generateContacts
 import pl.farmaprom.trainings.contactsapp.dogapi.DogApiService
 import retrofit2.Retrofit
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val application: Application) : AndroidViewModel(application) {
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -40,6 +44,9 @@ class MainViewModel : ViewModel() {
     val contactsViewState: StateFlow<ContactsViewState> = _contactsViewState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            ContactsDatabase.getInstance(application.applicationContext).contactDao().clear()
+        }
         Log.d("MainViewModel", "init")
         refreshData()
     }
@@ -50,10 +57,19 @@ class MainViewModel : ViewModel() {
             response.data.forEach {
                 Log.d("MainViewModel", "breed: ${it.attributes.name}")
             }
-            _contactsViewState.value = ContactsViewState(
-                contacts = response.data.mapIndexed { index, breed ->
-                    generateContact(index.toLong()).copy(name = breed.attributes.name)
+            val mappedData = response.data.mapIndexed { index, breed ->
+                generateContact(index.toLong()).copy(name = breed.attributes.name)
+            }
+            ContactsDatabase.getInstance(application.applicationContext).contactDao().insertContacts(
+                mappedData.map { contact ->
+                    ContactEntity(
+                        contact.id,
+                        contact.name
+                    )
                 }
+            )
+            _contactsViewState.value = ContactsViewState(
+                contacts = mappedData
             )
         }
     }
