@@ -2,6 +2,7 @@ package pl.farmaprom.trainings.contactsapp.ui.components
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -59,12 +60,21 @@ fun AvatarAndName(
 fun KeyValueItem(
     key: String,
     value: String,
+    isClickable: Boolean = false,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Dimens.medium, vertical = Dimens.small),
+            .padding(horizontal = Dimens.medium, vertical = Dimens.small)
+            .then(
+                if (isClickable && onClick != null) {
+                    Modifier.clickable { onClick() }
+                } else Modifier
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -78,11 +88,14 @@ fun KeyValueItem(
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = if (isClickable) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface
             )
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,6 +161,7 @@ fun ContactDetailScreen(
                 )
             }
 
+
             item {
                 Row(
                     modifier = Modifier
@@ -155,7 +169,7 @@ fun ContactDetailScreen(
                         .padding(Dimens.large),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    // Phone Button
+
                     if (contact.phone.isNotEmpty()) {
                         Card(
                             onClick = {
@@ -205,6 +219,7 @@ fun ContactDetailScreen(
                 }
             }
 
+
             if (contact.email.isNotEmpty()) {
                 item {
                     KeyValueItem(
@@ -218,7 +233,14 @@ fun ContactDetailScreen(
                 item {
                     KeyValueItem(
                         key = "Telefon",
-                        value = contact.phone
+                        value = contact.phone,
+                        isClickable = true,
+                        onClick = {
+                            val intent = Intent(Intent.ACTION_DIAL).apply {
+                                data = Uri.parse("tel:${contact.phone}")
+                            }
+                            context.startActivity(intent)
+                        }
                     )
                 }
             }

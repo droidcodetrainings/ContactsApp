@@ -32,7 +32,7 @@ fun ContactItem(
             .padding(vertical = Dimens.small, horizontal = Dimens.medium),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Profile Image
+
         GlideImage(
             imageModel = { profileImageUrl },
             modifier = Modifier
@@ -40,7 +40,6 @@ fun ContactItem(
                 .clip(CircleShape)
         )
 
-        // Name
         Text(
             text = name,
             style = MaterialTheme.typography.bodyLarge,
