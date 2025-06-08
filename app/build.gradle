@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -74,6 +75,20 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.8.9"
 
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
+
+    // Retrofit & Kotlin Serialization
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0'
+
+    // OkHttp for toMediaType and logging interceptor
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+    // Room database
+    implementation 'androidx.room:room-runtime:2.7.1'
+    ksp 'androidx.room:room-compiler:2.7.1'
+    implementation 'androidx.room:room-ktx:2.7.1'
+
     implementation "com.google.accompanist:accompanist-permissions:0.36.0"
 
     testImplementation 'junit:junit:4.13.2'

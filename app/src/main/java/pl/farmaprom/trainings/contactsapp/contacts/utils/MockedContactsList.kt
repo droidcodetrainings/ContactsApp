@@ -3,17 +3,17 @@ package pl.farmaprom.trainings.contactsapp.contacts.utils
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import kotlin.random.Random
 
-fun generateContactsList(nums: Int):List<Contact> = mutableListOf<Contact>().apply {
-    for (i in 1..nums){
-        add(generateContact(i.toLong()))
+fun generateContactsList(nums: Long): List<Contact> = mutableListOf<Contact>().apply {
+    for(i in 1..nums){
+        add(generateContact(i))
     }
 }
 
-private fun generateContact(id: Long): Contact {
+fun generateContact(i: Long, name: String = "Name $i"): Contact {
     val random = Random.nextInt(until = 4) + 1
     return Contact(
-        id = id,
-        name = "Name $id",
+        id = i,
+        name = name,
         profileImageUrl = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/face${
             random
         }.png",
