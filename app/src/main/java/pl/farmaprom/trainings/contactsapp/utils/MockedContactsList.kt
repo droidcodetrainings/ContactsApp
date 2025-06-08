@@ -9,11 +9,11 @@ fun generateContacts(nums: Int): List<Contact> = mutableListOf<Contact>().apply 
     }
 }
 
-fun generateContact(id: Long): Contact {
+fun generateContact(id: Long, name: String = "Name $id"): Contact {
     val random = Random.nextInt(until = 4) + 1
     return Contact(
         id = id,
-        name = "Name $id",
+        name = name,
         surname = "Surname $id",
         profileImageUrl = "https://raw.githubusercontent.com/kamilruchalaf/trainingassets/main/assets/face$random.png",
         isFavourite = random % 2 == 0
