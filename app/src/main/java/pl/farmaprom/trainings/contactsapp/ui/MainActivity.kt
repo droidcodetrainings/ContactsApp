@@ -5,10 +5,17 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,8 +23,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -25,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import pl.farmaprom.trainings.contactsapp.contacts.add.presentation.compose.AddContactScreen
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.list.presentation.ContactsListView
 import pl.farmaprom.trainings.contactsapp.contacts.list.presentation.ContactsViewState
@@ -67,6 +78,9 @@ class MainActivity : ComponentActivity() {
                             onContactClick = { contact ->
                                 viewModel.onContactSelected(contact)
                                 navController.navigate(ContactPreview(id = contact.id))
+                            },
+                            onAddContactClick = {
+                                navController.navigate(AddContact)
                             }
                         )
                     }
@@ -80,6 +94,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+                    composable<AddContact> {
+                        AddContactScreen()
+                    }
                 }
             }
         }
@@ -90,17 +107,36 @@ class MainActivity : ComponentActivity() {
 data object List
 
 @Serializable
+data object AddContact
+
+@Serializable
 data class ContactPreview(val id: Long)
 
 @Composable
 fun ContactsView(
     modifier: Modifier = Modifier,
     contactsViewState: ContactsViewState,
-    onContactClick: (Contact) -> Unit = {}
+    onContactClick: (Contact) -> Unit = {},
+    onAddContactClick: () -> Unit = {}
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {}
+        topBar = {},
+        floatingActionButton = {
+            IconButton(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(16.dp),
+                onClick = onAddContactClick
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
     ) { padding ->
         Column(
             modifier = modifier.fillMaxSize(),
