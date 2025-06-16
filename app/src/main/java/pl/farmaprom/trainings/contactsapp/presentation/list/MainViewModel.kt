@@ -55,7 +55,7 @@ class MainViewModel(
 
     init {
         Log.d("MainViewModel", "init")
-        fetchBreeds()
+        refresh()
     }
 
     fun onContactSelected(contact: Contact?) {
@@ -63,7 +63,7 @@ class MainViewModel(
         _contactsViewState.value = _contactsViewState.value.copy(selectedContact = contact)
     }
 
-    private fun fetchBreeds() {
+    fun refresh() {
         viewModelScope.launch {
             try {
                 database.sampleDao().clearAll()
