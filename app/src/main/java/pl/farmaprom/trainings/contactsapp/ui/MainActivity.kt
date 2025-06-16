@@ -7,9 +7,15 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import pl.farmaprom.trainings.contactsapp.contacts.SearchBoxTopAppBar
+import pl.farmaprom.trainings.contactsapp.contacts.add.presentation.AddContactScreen
 import pl.farmaprom.trainings.contactsapp.contacts.data.Contact
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.MainViewModel
 import pl.farmaprom.trainings.contactsapp.contacts.presentation.list.ContactsListView
@@ -70,6 +77,9 @@ class MainActivity : ComponentActivity() {
                             onContactClick = { contact ->
                                 viewModel.onContactSelected(contact)
                                 navController.navigate(ContactPreview(id = contact.id))
+                            },
+                            onAddContactClick = {
+                                navController.navigate(AddContact)
                             }
                         )
                     }
@@ -83,6 +93,9 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
+                    composable<AddContact> {
+                        AddContactScreen()
+                    }
                 }
             }
         }
@@ -93,6 +106,9 @@ class MainActivity : ComponentActivity() {
 data object ContactsList
 
 @Serializable
+data object AddContact
+
+@Serializable
 data class ContactPreview(
     val id: Long
 )
@@ -101,13 +117,26 @@ data class ContactPreview(
 fun ContactsView(
     modifier: Modifier = Modifier,
     contactsViewState: ContactsViewState,
-    onContactClick: (Contact) -> Unit = { }
+    onContactClick: (Contact) -> Unit = { },
+    onAddContactClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             SearchBoxTopAppBar()
         },
         modifier = Modifier.fillMaxSize(),
+        floatingActionButton = {
+            Button(
+                onClick = onAddContactClick
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                    Text("Dodaj")
+                }
+            }
+        }
     ) { padding ->
         Column(
             modifier = Modifier
