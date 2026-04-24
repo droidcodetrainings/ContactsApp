@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Devices.PIXEL_9_PRO_XL
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.droidcode.apps.contactsapp.conatacts.data.Contact
 import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,10 +51,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun generateContactItems(): List<ContactItem> {
+private fun generateContactItems(): List<Contact> {
     return List(100) { index ->
         val number = index + 1
-        ContactItem(
+        Contact(
             firstName = "John $number",
             lastName = "Doe",
             isFavorite = number % 5 == 0,
@@ -65,7 +66,7 @@ private fun generateContactItems(): List<ContactItem> {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LazyContactsList(
-    contactItems: List<ContactItem>
+    contactItems: List<Contact>
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -80,7 +81,9 @@ fun LazyContactsList(
         }
     ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
 //            If you need stick header to top while scrolling
 //            stickyHeader {
@@ -95,7 +98,7 @@ fun LazyContactsList(
 //            }
             items(contactItems) { item ->
                 ContactListItem(
-                    item = ContactItem(
+                    item = Contact(
                         firstName = item.firstName,
                         lastName = item.lastName,
                         isFavorite = item.isFavorite,
@@ -114,12 +117,11 @@ fun ContactsList() {
             modifier = Modifier
 //                .scrollable(state = rememberScrollState(), orientation = Orientation.Vertical) // Making component scrollable when no scroll by default component (ex. LazyColumn)
                 .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            ContactsHeader(
-                modifier = Modifier.padding(innerPadding)
-            )
+            ContactsHeader()
             ContactListItem(
-                item = ContactItem(
+                item = Contact(
                     firstName = "John",
                     lastName = "Doe",
                     isFavorite = true,
@@ -127,7 +129,7 @@ fun ContactsList() {
                 )
             )
             ContactListItem(
-                item = ContactItem(
+                item = Contact(
                     firstName = "John",
                     lastName = "Doe",
                     isFavorite = false,
@@ -152,7 +154,7 @@ fun ContactsHeader(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ContactListItem(item: ContactItem) {
+fun ContactListItem(item: Contact) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,7 +230,7 @@ fun HeaderPreview() {
 private fun ContactListItemFavoritePreview() {
     ContactsAppTheme {
         ContactListItem(
-            item = ContactItem(
+            item = Contact(
                 firstName = "John",
                 lastName = "Doe",
                 isFavorite = true,
@@ -243,7 +245,7 @@ private fun ContactListItemFavoritePreview() {
 private fun ContactListItemPreview() {
     ContactsAppTheme {
         ContactListItem(
-            item = ContactItem(
+            item = Contact(
                 firstName = "John",
                 lastName = "Doe",
                 isFavorite = false,
@@ -252,10 +254,3 @@ private fun ContactListItemPreview() {
         )
     }
 }
-
-data class ContactItem(
-    val firstName: String,
-    val lastName: String,
-    val isFavorite: Boolean,
-    val imageUrl: String? = null
-)

@@ -13,8 +13,8 @@ data class Contact(
     val city: String? = null,
     val birthday: DateTime? = null,
     val location: LatLng? = null,
-    val profileImageUrl: String? = null,
-    val isFavourite: Boolean = false,
+    val imageUrl: String? = null,
+    val isFavorite: Boolean = false,
     val isMe: Boolean = false,
     val lastActionTime: Long? = null
 )
