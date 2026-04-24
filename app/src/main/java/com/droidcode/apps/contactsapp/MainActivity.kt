@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +35,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_9_PRO_XL
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.droidcode.apps.contactsapp.conatacts.data.Contact
 import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
@@ -44,22 +47,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val viewModel: MainViewModel = viewModel()
+            val contactState by viewModel.contacts.collectAsStateWithLifecycle()
+
             ContactsAppTheme {
-                LazyContactsList(generateContactItems())
+                LazyContactsList(contactState.contacts)
             }
         }
-    }
-}
-
-private fun generateContactItems(): List<Contact> {
-    return List(100) { index ->
-        val number = index + 1
-        Contact(
-            firstName = "John $number",
-            lastName = "Doe",
-            isFavorite = number % 5 == 0,
-            imageUrl = "https://i.pravatar.cc/150?img=${(number % 70) + 1}"
-        )
     }
 }
 
@@ -85,26 +79,8 @@ fun LazyContactsList(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-//            If you need stick header to top while scrolling
-//            stickyHeader {
-//                ContactsHeader(
-//                    modifier = Modifier.padding(innerPadding)
-//                )
-//            }
-//            item {
-//                ContactsHeader(
-//                    modifier = Modifier.padding(innerPadding)
-//                )
-//            }
             items(contactItems) { item ->
-                ContactListItem(
-                    item = Contact(
-                        firstName = item.firstName,
-                        lastName = item.lastName,
-                        isFavorite = item.isFavorite,
-                        imageUrl = item.imageUrl
-                    )
-                )
+                ContactListItem(item = item)
             }
         }
     }
@@ -115,7 +91,6 @@ fun ContactsList() {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
             modifier = Modifier
-//                .scrollable(state = rememberScrollState(), orientation = Orientation.Vertical) // Making component scrollable when no scroll by default component (ex. LazyColumn)
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
@@ -190,13 +165,6 @@ fun ContactListItem(item: Contact) {
                 )
             }
         }
-//        if (item.isFavorite) { // withoun animation
-//            Icon(
-//                imageVector = Icons.Default.Star,
-//                contentDescription = null,
-//                tint = MaterialTheme.colorScheme.tertiary,
-//            )
-//        }
         AnimatedVisibility(
             visible = item.isFavorite
         ) {
@@ -254,3 +222,4 @@ private fun ContactListItemPreview() {
         )
     }
 }
+
