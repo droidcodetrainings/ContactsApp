@@ -1,12 +1,12 @@
-package pl.farmaprom.trainings.contactsapp.contacts.data
+package com.droidcode.apps.contactsapp.conatacts.data
 
 import com.google.android.gms.maps.model.LatLng
 import org.joda.time.DateTime
 
 data class Contact(
     val id: Long = -1,
-    val name: String = "",
-    val surname: String = "",
+    val firstName: String,
+    val lastName: String,
     val relation: String? = null,
     val email: String = "",
     val phone: String = "",
