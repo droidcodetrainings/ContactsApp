@@ -1,5 +1,6 @@
 package com.droidcode.apps.contactsapp
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.droidcode.apps.contactsapp.conatacts.data.Contact
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,11 @@ class MainViewModel : ViewModel() {
 
     init {
         _contacts.value = ContactsState(contacts = generateContactItems())
+    }
+
+    fun selectContact(contact: Contact) {
+        _contacts.value = _contacts.value.copy(selected = contact)
+        Log.i("MainActivity", "Selected contact: ${contact.firstName}")
     }
 
     private fun generateContactItems(): List<Contact> {
@@ -29,4 +35,5 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
 }

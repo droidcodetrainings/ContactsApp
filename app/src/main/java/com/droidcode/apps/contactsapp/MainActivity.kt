@@ -1,6 +1,7 @@
 package com.droidcode.apps.contactsapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,8 +22,12 @@ class MainActivity : ComponentActivity() {
             val contactState by viewModel.contacts.collectAsStateWithLifecycle()
 
             ContactsAppTheme {
-//                ContactsListScreen(contactState.contacts)
-                ContactPreviewScreen(contactState.contacts[0])
+                ContactsListScreen(
+                    contactState.contacts,
+                    onContactSelected = {
+                        viewModel.selectContact(it)
+                    })
+//                ContactPreviewScreen(contactState.contacts[0])
             }
         }
     }

@@ -2,6 +2,7 @@ package com.droidcode.apps.contactsapp.ui.contacts
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,8 @@ import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactsListScreen(
-    contactItems: List<Contact>
+    contactItems: List<Contact>,
+    onContactSelected: (Contact) -> Unit = {}
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -57,21 +59,27 @@ fun ContactsListScreen(
                 .padding(innerPadding)
         ) {
             items(contactItems) { item ->
-                ContactListItem(item = item)
+                ContactListItem(
+                    item = item,
+                    onContactClick = { onContactSelected(item) })
             }
         }
     }
 }
 
 @Composable
-fun ContactListItem(item: Contact) {
+fun ContactListItem(
+    item: Contact,
+    onContactClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp
-            ),
+            )
+            .clickable { onContactClick() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
