@@ -22,12 +22,22 @@ class MainActivity : ComponentActivity() {
             val contactState by viewModel.contacts.collectAsStateWithLifecycle()
 
             ContactsAppTheme {
-                ContactsListScreen(
-                    contactState.contacts,
-                    onContactSelected = {
-                        viewModel.selectContact(it)
-                    })
-//                ContactPreviewScreen(contactState.contacts[0])
+                if (contactState.selected != null) {
+                    Log.i("MainActivity", "Selected contact: ${contactState.selected?.firstName}")
+                    ContactPreviewScreen(
+                        contact = contactState.selected!!,
+                        onBackClick = {
+                            viewModel.unselectContact()
+                        }, onCallContactClick = {
+                        })
+                } else {
+                    ContactsListScreen(
+                        contactState.contacts,
+                        onContactSelected = {
+                            viewModel.selectContact(it)
+                        }
+                    )
+                }
             }
         }
     }
