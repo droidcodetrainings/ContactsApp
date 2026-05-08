@@ -21,6 +21,10 @@ class MainViewModel : ViewModel() {
                 firstName = "John $number",
                 lastName = "Doe",
                 isFavorite = number % 5 == 0,
+                email = "john.doe$number@example.com",
+                phone = "123-456-789",
+                city = "New York",
+                relation = "Friend",
                 imageUrl = "https://i.pravatar.cc/150?img=${(number % 70) + 1}"
             )
         }
