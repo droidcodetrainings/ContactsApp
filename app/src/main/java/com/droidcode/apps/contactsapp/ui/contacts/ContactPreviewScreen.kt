@@ -1,5 +1,12 @@
 package com.droidcode.apps.contactsapp.ui.contacts
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,9 +40,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.droidcode.apps.contactsapp.R
 import com.droidcode.apps.contactsapp.conatacts.data.Contact
@@ -47,6 +56,16 @@ fun ContactPreviewScreen(
     onBackClick: () -> Unit = {},
     onCallContactClick: (String) -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            makeCall(context, contact.phone)
+        }
+    }
+
+
     Scaffold(
         topBar = {
             ContactDetailAppBar(
@@ -64,7 +83,20 @@ fun ContactPreviewScreen(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                ContactBaseInfo(contact = contact, onCallContactClick = onCallContactClick)
+                ContactBaseInfo(contact = contact, onCallContactClick = { phoneNumber ->
+                    when (PackageManager.PERMISSION_GRANTED) {
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            android.Manifest.permission.CALL_PHONE
+                        ) -> {
+                            makeCall(context, phoneNumber)
+                        }
+
+                        else -> {
+                            launcher.launch(Manifest.permission.CALL_PHONE)
+                        }
+                    }
+                })
                 Spacer(modifier = Modifier.height(24.dp))
             }
             item {
@@ -86,6 +118,20 @@ fun ContactPreviewScreen(
                 )
             }
         }
+    }
+}
+
+private fun makeCall(context: Context, phone: String) {
+    if (phone.isBlank()) return
+
+    val intent = android.content.Intent(android.content.Intent.ACTION_CALL)
+    intent.data = Uri.parse("tel:$phone")
+    if (ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CALL_PHONE
+        ) == PackageManager.PERMISSION_GRANTED
+    ) {
+        context.startActivity(intent)
     }
 }
 
@@ -148,6 +194,7 @@ fun ContactBaseInfo(
         Button(
             onClick = {
                 onCallContactClick(contact.phone)
+                Log.i("ContactPreviewScreen", "Calling contact: ${contact.phone}")
             },
             shape = RectangleShape
         ) {

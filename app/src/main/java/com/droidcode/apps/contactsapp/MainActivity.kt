@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                                     viewModel.unselectContact()
                                     navController.popBackStack()
                                 }, onCallContactClick = {
+                                    Log.i("MainActivity", "Calling contact: $it")
                                 }
                             )
                         }
