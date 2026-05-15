@@ -1,5 +1,6 @@
 package com.droidcode.apps.contactsapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -13,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.droidcode.apps.contactsapp.server.KtorServer
 import com.droidcode.apps.contactsapp.ui.contacts.ContactEditScreen
 import com.droidcode.apps.contactsapp.ui.contacts.ContactPreviewScreen
 import com.droidcode.apps.contactsapp.ui.contacts.ContactsListScreen
@@ -22,6 +24,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        startService(Intent(this, KtorServer::class.java))
+
         enableEdgeToEdge()
         setContent {
             val viewModel: MainViewModel = viewModel()
