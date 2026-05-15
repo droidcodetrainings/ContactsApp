@@ -7,4 +7,9 @@
     <string name="text_city_not_provided">Nie podano</string>
     <string name="text_city_no_provided">Nie podano</string>
     <string name="edit_contact">Edytuj</string>
+    <string name="cancel">Anuluj</string>
+    <string name="done">Gotowe</string>
+    <string name="label_first_name">Imie</string>
+    <string name="label_last_name">Nazwisko</string>
+    <string name="label_birthday">Urodziny</string>
 </resources>

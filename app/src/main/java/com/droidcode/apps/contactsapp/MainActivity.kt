@@ -8,9 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.droidcode.apps.contactsapp.ui.contacts.ContactEditScreen
 import com.droidcode.apps.contactsapp.ui.contacts.ContactPreviewScreen
 import com.droidcode.apps.contactsapp.ui.contacts.ContactsListScreen
 import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
@@ -32,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable("contactsList") {
                         ContactsListScreen(
-                            contactState.contacts,
+                            contactItems = contactState.contacts,
                             onContactSelected = {
                                 viewModel.selectContact(it)
                                 navController.navigate("contactPreview")
@@ -40,36 +43,42 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("contactPreview") {
-                        contactState.selected?.let {
+                        contactState.selected?.let { contact ->
                             ContactPreviewScreen(
-                                contact = it,
+                                contact = contact,
                                 onBackClick = {
                                     viewModel.unselectContact()
                                     navController.popBackStack()
-                                }, onCallContactClick = {
+                                },
+                                onCallContactClick = {
                                     Log.i("MainActivity", "Calling contact: $it")
+                                },
+                                onEditClick = {
+                                    navController.navigate("contactEdit/${contact.id}")
                                 }
                             )
                         }
                     }
-                }
+                    composable(
+                        route = "contactEdit/{contactId}",
+                        arguments = listOf(navArgument("contactId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val contactId = backStackEntry.arguments?.getString("contactId")
+                        Log.i("MainActivity", "Editing contact with ID: $contactId")
 
-
-                if (contactState.selected != null) {
-                    Log.i("MainActivity", "Selected contact: ${contactState.selected?.firstName}")
-                    ContactPreviewScreen(
-                        contact = contactState.selected!!,
-                        onBackClick = {
-                            viewModel.unselectContact()
-                        }, onCallContactClick = {
-                        })
-                } else {
-                    ContactsListScreen(
-                        contactState.contacts,
-                        onContactSelected = {
-                            viewModel.selectContact(it)
+                        contactState.selected?.let { contact ->
+                            ContactEditScreen(
+                                contact = contact,
+                                onCancelClick = {
+                                    navController.popBackStack()
+                                },
+                                onDoneClick = {
+                                    // Update logic would go here
+                                    navController.popBackStack()
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
