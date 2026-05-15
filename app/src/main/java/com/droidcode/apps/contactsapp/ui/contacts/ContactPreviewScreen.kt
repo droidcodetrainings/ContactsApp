@@ -19,10 +19,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +56,8 @@ import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
 fun ContactPreviewScreen(
     contact: Contact,
     onBackClick: () -> Unit = {},
-    onCallContactClick: (String) -> Unit = {}
+    onCallContactClick: (String) -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
@@ -71,6 +74,13 @@ fun ContactPreviewScreen(
             ContactDetailAppBar(
                 onBackClick = onBackClick,
                 isFavorite = contact.isFavorite
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onEditClick,
+                icon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                text = { Text(text = stringResource(R.string.edit_contact)) }
             )
         }
     ) { innerPadding ->

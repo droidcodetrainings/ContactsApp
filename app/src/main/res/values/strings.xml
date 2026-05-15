@@ -6,4 +6,5 @@
     <string name="label_city">Miejscowość</string>
     <string name="text_city_not_provided">Nie podano</string>
     <string name="text_city_no_provided">Nie podano</string>
+    <string name="edit_contact">Edytuj</string>
 </resources>
