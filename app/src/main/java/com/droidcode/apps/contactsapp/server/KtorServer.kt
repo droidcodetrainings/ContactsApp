@@ -17,6 +17,7 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
+import kotlinx.serialization.json.Json
 
 class KtorServer : Service() {
 
@@ -36,7 +37,10 @@ class KtorServer : Service() {
     private fun getServer(): EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration> {
         return embeddedServer(Netty, port = httpPort) {
             install(ContentNegotiation) {
-                json()
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                })
             }
             routing {
                 get("/contacts") {
