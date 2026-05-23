@@ -1,5 +1,6 @@
 package com.droidcode.apps.contactsapp.ui.contacts
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
