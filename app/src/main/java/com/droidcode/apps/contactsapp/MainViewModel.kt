@@ -20,6 +20,10 @@ class MainViewModel : ViewModel() {
         Log.i("MainActivity", "Selected contact: ${contact.firstName}")
     }
 
+    fun unselectContact() {
+        _contacts.value = _contacts.value.copy(selected = null)
+    }
+
     private fun generateContactItems(): List<Contact> {
         return List(100) { index ->
             val number = index + 1
@@ -35,5 +39,6 @@ class MainViewModel : ViewModel() {
             )
         }
     }
+
 
 }
