@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.play.services.maps)
     implementation(libs.joda.time)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
