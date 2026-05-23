@@ -42,7 +42,13 @@ class MainActivity : ComponentActivity() {
                     composable("contact_preview") {
                         if (contactState.selected != null) {
                             val contact = contactState.selected!!
-                            ContactPreviewScreen(contact)
+                            ContactPreviewScreen(
+                                contact = contact,
+                                onBackClick = { navController.popBackStack() },
+                                onCallContactClick = {
+                                    Log.d("MainActivity", "Calling $it")
+                                }
+                            )
                         }
                     }
                 }
