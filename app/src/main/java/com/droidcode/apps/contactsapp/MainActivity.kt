@@ -41,7 +41,16 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("contactPreview") {
                         contactState.selected?.let { contact ->
-                            ContactPreviewScreen(contact = contact)
+                            ContactPreviewScreen(
+                                contact = contact,
+                                onBackClick = {
+                                    navController.popBackStack()
+                                    viewModel.unselectContact()
+                                },
+                                onCallContactClick = {
+                                    Log.i("MainActivity", "Calling contact: $it")
+                                }
+                            )
                         }
                     }
                 }
