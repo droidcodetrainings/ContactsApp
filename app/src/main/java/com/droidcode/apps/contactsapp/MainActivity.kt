@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.droidcode.apps.contactsapp.conatacts.data.database.AppDatabase
 import com.droidcode.apps.contactsapp.ui.contacts.ContactPreviewScreen
 import com.droidcode.apps.contactsapp.ui.contacts.ContactsListScreen
 import com.droidcode.apps.contactsapp.ui.theme.ContactsAppTheme
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppDatabase.getInstance(this)
         enableEdgeToEdge()
         setContent {
             val viewModel: MainViewModel = viewModel()
